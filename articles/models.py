@@ -17,16 +17,23 @@ class Article(models.Model):
         return self.title
 
 
-class TagPost(models.Model):
-    name = models.CharField(max_length=125, verbose_name='Раздел')
-    tagposts = models.ManyToManyField(Article, related_name='scopes', through='Scope')
+class Tag(models.Model):
+    name = models.CharField(max_length=125, verbose_name='Название раздела')
+    articles = models.ManyToManyField(Article, related_name='tags', through='Scope')
+
+    class Meta:
+        verbose_name = 'Раздел'
+        verbose_name_plural = 'Разделы'
+        ordering = ['name']
 
     def __str__(self):
         return self.name
     
 
 class Scope(models.Model):
-    article = models.ForeignKey(Article, on_delete = models.CASCADE)
-    tag = models.ForeignKey(TagPost, on_delete = models.CASCADE)
-    is_main = models.BooleanField()
+    article = models.ForeignKey(Article, on_delete = models.CASCADE, related_name='scopes')
+    tag = models.ForeignKey(Tag, on_delete = models.CASCADE, related_name='scopes', verbose_name = 'Раздел')
+    is_main = models.BooleanField(verbose_name = 'Основной')
     
+    class Meta:
+        verbose_name = 'Тематика статьи'
